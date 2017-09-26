@@ -1,5 +1,7 @@
 package intellij.zeppelin
 
+import java.net.HttpCookie
+
 import spray.json.{JsString, _}
 
 import scala.util.matching.Regex
@@ -7,7 +9,7 @@ import scala.util.{Failure, Success, Try}
 import scalaj.http.Http
 
 case class Notebook(id:String, size:Int) {
-  def notebookHeader:String = Seq(markerText, s"//http://localhost:8080/#/notebook/$id").mkString("\n")
+  def notebookHeader(url:String):String = Seq(markerText, s"//$url/#/notebook/$id").mkString("\n")
   def markerText:String = s"//Notebook:$id,$size"
 }
 case class Paragraph(id:String, index:Int) {
@@ -36,10 +38,21 @@ object Paragraph{
   }
 
 }
-object ZeppelinApi{
+case class Credentials(username:String, password:String)
+
+class ZeppelinApi(val url:String, credentials:Option[Credentials]){
+
+  lazy val sessionToken: Option[HttpCookie] = credentials.flatMap { c =>
+    val r = Http(s"$url/api/login").postForm(Seq(
+      ("username", c.username),
+      ("password", c.password)
+    ))
+    r.asString.cookies.headOption
+  }
+
 
   def createNotebook(name:String):Try[Notebook] = {
-    val req = Http("http://localhost:8080/api/notebook").postData(
+    val req = request("/api/notebook").postData(
       s"""
         |{"name": "$name"}
       """.stripMargin)
@@ -50,6 +63,12 @@ object ZeppelinApi{
       case _ => Failure(new RuntimeException("Error creating new Zeppelin notebook"))
     }
   }
+
+  private def request(path:String) = {
+    val r = Http(s"$url$path")
+    sessionToken.fold(r)(cookie => r.header("Cookie", s"${cookie.getName}=${cookie.getValue}"))
+  }
+
   def createParagraph(notebook: Notebook, text: String, atIndex:Option[Int] = None):Try[Paragraph] = {
     val escaped = text.replaceAll("\\\"", "\\\\\"")
 
@@ -57,7 +76,7 @@ object ZeppelinApi{
       case Some(index) => s"""{"title":"new note", "text": "$escaped", "index": $index}"""
       case None => s"""{"title":"new note", "text": "$escaped"}"""
     }
-    val req = Http(s"http://localhost:8080/api/notebook/${notebook.id}/paragraph").postData(body)
+    val req = request(s"/api/notebook/${notebook.id}/paragraph").postData(body)
 
     req.asString.body.parseJson.asJsObject.fields("body") match {
       case JsString(paragraphId) => Success(Paragraph(paragraphId, notebook.size))
@@ -66,7 +85,7 @@ object ZeppelinApi{
   }
 
   def deleteParagraph(notebook: Notebook, paragraph: Paragraph):Try[Paragraph] = {
-    val result = Http(s"http://localhost:8080/api/notebook/${notebook.id}/paragraph/${paragraph.id}").method("DELETE")
+    val result = request(s"/api/notebook/${notebook.id}/paragraph/${paragraph.id}").method("DELETE")
       .asString
       .body.parseJson.asJsObject
 
@@ -81,7 +100,7 @@ object ZeppelinApi{
   }
 
   def runParagraph(notebook: Notebook, paragraph: Paragraph):Try[ParagraphResult] = {
-    val result = Http(s"http://localhost:8080/api/notebook/run/${notebook.id}/${paragraph.id}").postData("")
+    val result = request(s"/api/notebook/run/${notebook.id}/${paragraph.id}").postData("")
       .asString
       .body.parseJson.asJsObject
 

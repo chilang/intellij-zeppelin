@@ -12,7 +12,7 @@ class ZeppelinDeleteParagraph extends ZeppelinAction {
       paragraph <- findParagraph(editor)
     } yield {
       (for {
-         _ <- ZeppelinApi.deleteParagraph(notebook, paragraph)
+         _ <- zeppelin(anActionEvent).deleteParagraph(notebook, paragraph)
        } yield {
          runWriteAction(anActionEvent){ _ =>
            findPreviousLineMatching(editor, line => Paragraph.parse(line).isDefined).foreach{ line =>

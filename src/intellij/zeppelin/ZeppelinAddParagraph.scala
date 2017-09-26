@@ -10,17 +10,18 @@ class ZeppelinAddParagraph extends ZeppelinAction {
   override def actionPerformed(anActionEvent: AnActionEvent): Unit = {
 
     val editor = currentEditor(anActionEvent)
+    val api = zeppelin(anActionEvent)
     findNotebook(editor)
       .map { notebook =>
         val codeFragment = currentCodeFragment(editor)
         (for {
-          paragraph <- ZeppelinApi.createParagraph(notebook, codeFragment.content)
+          paragraph <- api.createParagraph(notebook, codeFragment.content)
           _ <- Try(runWriteAction(anActionEvent){ _ =>
 
             updateNotebookMarker(editor, notebook.copy(size = notebook.size+1))
             insertBeforeFragment(editor, codeFragment, paragraph.markerText + "\n")
           })
-          result <- ZeppelinApi.runParagraph(notebook, paragraph)
+          result <- api.runParagraph(notebook, paragraph)
         } yield {
           runWriteAction(anActionEvent) { _ =>
             insertAfterFragment(editor, codeFragment, result.markerText)

@@ -1,23 +1,26 @@
 <idea-plugin>
   <id>intellij.zeppelin.</id>
   <name>IntelliJ Zeppelin</name>
-  <version>1.0</version>
+  <version>0.2</version>
   <vendor email="chilang@gmail.com" url="https://github.com/chilang">Chi Lang Ngo</vendor>
 
   <description><![CDATA[
-      Use IntelliJ as editor for Zeppelin's notebook.
+      Use IntelliJ as editor for Apache <a href="http://zeppelin.apache.org>Zeppelin</a>'s notebook.
       Features:
-      - Create new Zeppelin notebook from within IntelliJ
-      - Create and run new code paragraph
-      - Run existing code paragraph
-      - Delete existing paragraph
+      <ul>
+        <li>Create new Zeppelin notebook from within IntelliJ
+        <li>Create and run new code paragraph
+        <li>Run existing code paragraph
+        <li>Delete existing paragraph
+      </ul>
 
       Access actions via Tools or keyboard shortcuts.
-      Currently only works with Zeppelin on http://localhost:8080
+
     ]]></description>
 
   <change-notes><![CDATA[
       0.1 First working version
+      0.2 Customize Zeppelin host and (optional) username/password authentication via Settings -> Language & Framework -> Zeppelin Notebook
     ]]>
   </change-notes>
 
@@ -31,31 +34,38 @@
   -->
 
   <extensions defaultExtensionNs="com.intellij">
-    <!-- Add your extensions here -->
+    <projectConfigurable groupId="language"  instance="intellij.zeppelin.ZeppelinConfigurable"
+                         id="ZeppelinConfigurable" displayName="Zeppelin Notebook"
+                         nonDefaultProject="true"/>
   </extensions>
 
+
   <actions>
-    <action id="intellij.zeppelin.ZeppelinNewNoteAction" class="intellij.zeppelin.ZeppelinNewNoteAction"
-            text="New Zeppelin Notebook" description="Create new Zeppelin notebook">
-      <add-to-group group-id="ToolsMenu" anchor="first"/>
-      <keyboard-shortcut first-keystroke="control alt shift ENTER" keymap="$default"/>
-    </action>
-    <action id="intellij.zeppelin.ZeppelinAddParagraph" class="intellij.zeppelin.ZeppelinAddParagraph"
-            text="Add Zeppelin paragraph" description="Run selected code as new Zeppelin paragraph">
-      <add-to-group group-id="ToolsMenu" anchor="first"/>
-      <keyboard-shortcut first-keystroke="alt shift ENTER" keymap="$default"/>
-    </action>
-    <action id="intellij.zeppelin.ZeppelinRunParagraph" class="intellij.zeppelin.ZeppelinRunParagraph"
-            text="Run Zeppelin paragraph" description="Run selected code in an existing Zeppelin paragraph">
-      <add-to-group group-id="ToolsMenu" anchor="first"/>
-      <keyboard-shortcut first-keystroke="shift ENTER" keymap="$default"/>
-    </action>
-    <action id="cintellij.zeppelin.ZeppelinDeleteParagraph" class="intellij.zeppelin.ZeppelinDeleteParagraph"
-            text="Delete Zeppelin paragraph" description="Delete current Zeppelin paragraph">
-      <add-to-group group-id="ToolsMenu" anchor="first"/>
-      <keyboard-shortcut first-keystroke="alt shift BACKSPACE" keymap="$default"/>
-    </action>
+      <group id="ZeppelinGroup" text="Zeppelin" popup="true">
+        <add-to-group group-id="ToolsMenu" anchor="first"/>
+        <action id="intellij.zeppelin.ZeppelinNewNoteAction" class="intellij.zeppelin.ZeppelinNewNoteAction"
+                text="New Zeppelin Notebook" description="Create new Zeppelin notebook">
+          <keyboard-shortcut first-keystroke="control alt shift ENTER" keymap="$default"/>
+        </action>
+        <action id="intellij.zeppelin.ZeppelinAddParagraph" class="intellij.zeppelin.ZeppelinAddParagraph"
+                text="Add Zeppelin paragraph" description="Run selected code as new Zeppelin paragraph">
+          <keyboard-shortcut first-keystroke="alt shift ENTER" keymap="$default"/>
+        </action>
+        <action id="intellij.zeppelin.ZeppelinRunParagraph" class="intellij.zeppelin.ZeppelinRunParagraph"
+                text="Run Zeppelin paragraph" description="Run selected code in an existing Zeppelin paragraph">
+          <keyboard-shortcut first-keystroke="shift ENTER" keymap="$default"/>
+        </action>
+        <action id="intellij.zeppelin.ZeppelinDeleteParagraph" class="intellij.zeppelin.ZeppelinDeleteParagraph"
+                text="Delete Zeppelin paragraph" description="Delete current Zeppelin paragraph">
+          <keyboard-shortcut first-keystroke="alt shift BACKSPACE" keymap="$default"/>
+        </action>
+      </group>
+
 
   </actions>
-
+  <project-components>
+    <component>
+      <implementation-class>intellij.zeppelin.ZeppelinConnection</implementation-class>
+    </component>
+  </project-components>
 </idea-plugin>

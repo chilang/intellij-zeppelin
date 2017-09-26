@@ -3,7 +3,7 @@ package intellij.zeppelin
 import com.intellij.notification.{NotificationType, Notifications}
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.editor.{Document, Editor, SelectionModel}
+import com.intellij.openapi.editor.{Document, Editor}
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.ex.FileEditorManagerEx
 import com.intellij.openapi.project.Project
@@ -20,6 +20,10 @@ trait IdeaDocumentApi {
 
   def currentEditor(anActionEvent: AnActionEvent): Editor = {
     FileEditorManagerEx.getInstanceEx(anActionEvent.getProject).getSelectedTextEditor
+  }
+
+  def currentFile(anActionEvent: AnActionEvent): VirtualFile = {
+    FileEditorManagerEx.getInstanceEx(anActionEvent.getProject).getCurrentFile
   }
 
   def invokeLater(f: => Unit): Unit = {

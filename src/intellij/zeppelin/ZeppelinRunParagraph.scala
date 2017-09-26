@@ -5,19 +5,19 @@ import com.intellij.openapi.editor.Editor
 
 class ZeppelinRunParagraph extends ZeppelinAction {
 
-
   override def actionPerformed(anActionEvent: AnActionEvent): Unit = {
-
     val editor = currentEditor(anActionEvent)
+    val api = zeppelin(anActionEvent)
     for {
       note <- findNotebook(editor)
       paragraph <- findParagraph(editor)
     } yield {
 
       val codeFragment = currentCodeFragment(editor)
+
       (for {
-          newParagraph <- ZeppelinApi.replaceParagraph(note, paragraph, codeFragment.content)
-          result <- ZeppelinApi.runParagraph(note, newParagraph)
+          newParagraph <- api.replaceParagraph(note, paragraph, codeFragment.content)
+          result <- api.runParagraph(note, newParagraph)
         } yield {
           runWriteAction(anActionEvent) { _ =>
             replaceParagraphMarker(editor, paragraph, newParagraph)

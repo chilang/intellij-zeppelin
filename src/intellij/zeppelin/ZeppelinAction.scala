@@ -10,6 +10,10 @@ import scala.collection.immutable
 
 abstract class ZeppelinAction extends AnAction with IdeaDocumentApi {
 
+  def zeppelin(anActionEvent: AnActionEvent): ZeppelinApi = {
+    ZeppelinConnection.connectionFor(anActionEvent.getProject).api
+  }
+
   def findNotebook(editor: Editor): Option[Notebook] = precedingLines(editor).flatMap(x => Notebook.parse(x._2)).headOption
 
   def findParagraph(editor: Editor): Option[Paragraph] = precedingLines(editor).flatMap(x => Paragraph.parse(x._2)).headOption
