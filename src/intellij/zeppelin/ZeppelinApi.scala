@@ -95,8 +95,16 @@ class ZeppelinApi(val url:String, credentials:Option[Credentials]){
     }
   }
 
-  def replaceParagraph(notebook: Notebook, paragraph: Paragraph, text:String): Try[Paragraph] = {
-    deleteParagraph(notebook, paragraph).flatMap(_ => createParagraph(notebook, text, Some(paragraph.index)))
+  def updateParagraph(notebook: Notebook, paragraph: Paragraph, text:String): Try[Paragraph] = {
+    val escaped = text.replaceAll("\\\"", "\\\\\"")
+    val result = request(s"/api/notebook/${notebook.id}/paragraph/${paragraph.id}").put(s"""{"text": "$escaped"}""")
+      .asString
+      .body.parseJson.asJsObject
+
+    result.fields("status") match {
+      case JsString(status) if status == "OK" => Success(paragraph)
+      case unknown => Failure(new RuntimeException(s"Unrecognized response $unknown"))
+    }
   }
 
   def runParagraph(notebook: Notebook, paragraph: Paragraph):Try[ParagraphResult] = {

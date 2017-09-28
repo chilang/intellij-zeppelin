@@ -16,24 +16,16 @@ class ZeppelinRunParagraph extends ZeppelinAction {
       val codeFragment = currentCodeFragment(editor)
 
       (for {
-          newParagraph <- api.replaceParagraph(note, paragraph, codeFragment.content)
+          newParagraph <- api.updateParagraph(note, paragraph, codeFragment.content)
           result <- api.runParagraph(note, newParagraph)
         } yield {
           runWriteAction(anActionEvent) { _ =>
-            replaceParagraphMarker(editor, paragraph, newParagraph)
             insertAfterFragment(editor, codeFragment, result.markerText)
           }
         }).recover { case t: Throwable => show(t.toString) }
       }.getOrElse(show("No Zeppelin //Notebook: marker found."))
 
   }
-
-  private def replaceParagraphMarker(editor: Editor, existingParagraph: Paragraph, newParagraph: Paragraph): Unit = {
-    findPreviousLineMatching(editor, text => Paragraph.parse(text).isDefined).foreach { line =>
-      replaceLine(editor, line, newParagraph.markerText)
-    }
-  }
-
 }
 
 
