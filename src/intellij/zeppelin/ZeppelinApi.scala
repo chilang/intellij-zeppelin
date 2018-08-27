@@ -1,6 +1,6 @@
 package intellij.zeppelin
 
-import java.net.HttpCookie
+import java.net.{HttpCookie, InetSocketAddress, SocketAddress}
 
 import spray.json.{JsString, _}
 
@@ -40,10 +40,19 @@ object Paragraph{
 }
 case class Credentials(username:String, password:String)
 
-class ZeppelinApi(val url:String, credentials:Option[Credentials]){
+class ZeppelinApi(val url:String, credentials:Option[Credentials], proxy:Option[String]){
+  private[this] def buildReq(url:String) = {
+    val h = Http(url)
+    proxy match {
+      case None => h
+      case Some(p) =>
+        val pinfo = p.split(":")
+        h.proxy(new java.net.Proxy(java.net.Proxy.Type.SOCKS, new InetSocketAddress(pinfo.head, pinfo.last.toInt)))
+    }
+  }
 
   lazy val sessionToken: Option[HttpCookie] = credentials.flatMap { c =>
-    val r = Http(s"$url/api/login").postForm(Seq(
+    val r = buildReq(s"$url/api/login").postForm(Seq(
       ("username", c.username),
       ("password", c.password)
     ))
@@ -65,7 +74,7 @@ class ZeppelinApi(val url:String, credentials:Option[Credentials]){
   }
 
   private def request(path:String) = {
-    val r = Http(s"$url$path")
+    val r = buildReq(s"$url$path")
     sessionToken.fold(r)(cookie => r.header("Cookie", s"${cookie.getName}=${cookie.getValue}"))
   }
 

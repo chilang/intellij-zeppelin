@@ -10,15 +10,18 @@ class ZeppelinConnection(val project:Project) extends ProjectComponent{
   private[this] var username:String = ""
   private[this] var password:String = ""
   private[this] var hostUrl:String = ZeppelinConnection.DefaultZeppelinHost
+  private[this] var proxyUrl:String = ""
   private[this] var maybeApi: Option[ZeppelinApi] = None
 
   def getUsername:String = username
   def getPassword:String = password
   def getHostUrl:String = hostUrl
+  def getProxyUrl:String = proxyUrl
 
   def setUsername(value:String): Unit = { username = value }
   def setPassword(value:String): Unit = { password = value }
   def setHostUrl(value:String): Unit = { hostUrl = value }
+  def setProxyUrl(value:String):Unit = { proxyUrl = value }
 
   def promptForZeppelinHost():ZeppelinApi = {
     hostUrl = Messages.showInputDialog(
@@ -31,14 +34,15 @@ class ZeppelinConnection(val project:Project) extends ProjectComponent{
 
         override def canClose(inputString: String) = true
       })
-    maybeApi = Some(new ZeppelinApi(hostUrl, credentials))
+    maybeApi = Some(new ZeppelinApi(hostUrl, credentials, proxyInfo))
     maybeApi.get
   }
 
   private def credentials:Option[Credentials] = if (username != "" && password != "") Some(Credentials(username, password)) else None
+  private def proxyInfo:Option[String] = if(proxyUrl!="") Some(proxyUrl) else None
 
   private [zeppelin] def resetApi():Unit = {
-    maybeApi = Some(new ZeppelinApi(hostUrl, credentials))
+    maybeApi = Some(new ZeppelinApi(hostUrl, credentials, proxyInfo))
   }
   def api: ZeppelinApi = maybeApi.getOrElse(promptForZeppelinHost())
 }

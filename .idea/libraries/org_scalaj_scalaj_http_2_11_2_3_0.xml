@@ -5,6 +5,8 @@
       <root url="jar://$PROJECT_DIR$/lib/scalaj-http_2.11-2.3.0.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.ideaLibSources/scalaj-http_2.11-2.3.0-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>
