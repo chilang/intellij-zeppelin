@@ -1,26 +1,27 @@
 <idea-plugin>
   <id>intellij.zeppelin.</id>
   <name>IntelliJ Zeppelin</name>
-  <version>0.2</version>
+  <version>0.3</version>
   <vendor email="chilang@gmail.com" url="https://github.com/chilang">Chi Lang Ngo</vendor>
 
   <description><![CDATA[
-      Use IntelliJ as editor for Apache <a href="http://zeppelin.apache.org>Zeppelin</a>'s notebook.
+      Use IntelliJ as editor for Apache Zeppelin's notebook.
       Features:
       <ul>
-        <li>Create new Zeppelin notebook from within IntelliJ
-        <li>Create and run new code paragraph
-        <li>Run existing code paragraph
-        <li>Delete existing paragraph
+        <li>Create new Zeppelin notebook from within IntelliJ .Scala file (CTRL+ALT+SHIFT+ENTER)
+        <li>Create and run new code paragraph (ALT+SHIFT+ENTER)
+        <li>Run existing code paragraph (SHIFT+ENTER)
+        <li>Delete existing paragraph (ALT+SHIFT+D)
       </ul>
 
-      Access actions via Tools or keyboard shortcuts.
+      Access Zeppelin actions via Tools->Zeppelin or keyboard shortcuts.
 
     ]]></description>
 
   <change-notes><![CDATA[
       0.1 First working version
       0.2 Customize Zeppelin host and (optional) username/password authentication via Settings -> Language & Framework -> Zeppelin Notebook
+      0.3 Fixed short-cuts for deleting paragraph. (Roberto Congiu) Added support for SOCKS proxy (useful for connecting to Zeppelin on AWS)
     ]]>
   </change-notes>
 
@@ -57,7 +58,7 @@
         </action>
         <action id="intellij.zeppelin.ZeppelinDeleteParagraph" class="intellij.zeppelin.ZeppelinDeleteParagraph"
                 text="Delete Zeppelin paragraph" description="Delete current Zeppelin paragraph">
-          <keyboard-shortcut first-keystroke="alt shift BACKSPACE" keymap="$default"/>
+          <keyboard-shortcut first-keystroke="alt shift d" keymap="$default"/>
         </action>
       </group>
 

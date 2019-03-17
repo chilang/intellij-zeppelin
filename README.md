@@ -7,6 +7,8 @@ Intellij Zeppelin
 
 ## Features 
 
+### 0.3
+- Support for SOCKS proxy (useful when connecting to Zeppelin on AWS). Thanks to [**Roberto Congiu**](https://github.com/rcongiu)
 ### 0.2
 
 ![IntelliJ Tools Zeppelin Menu](intellij_tools_zeppelin.png)
