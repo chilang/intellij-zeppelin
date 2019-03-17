@@ -17,8 +17,9 @@ public class ZeppelinConfigurable implements SearchableConfigurable {
   private JPasswordField passwordField;
   private JPanel configPanel;
   private JBTextField hostTextField;
+  private JBTextField proxyField;
 
-  private final Project myProject;
+    private final Project myProject;
 
   public ZeppelinConfigurable(@NotNull Project project) {
     myProject = project;
@@ -28,6 +29,7 @@ public class ZeppelinConfigurable implements SearchableConfigurable {
     setInitialText(usernameField, connection.getUsername(), DEFAULT_USERNAME_TEXT);
     passwordField.setText(connection.getPassword());
     hostTextField.setText(connection.getHostUrl());
+    proxyField.setText(connection.getProxyUrl());
   }
 
   @Nls
@@ -66,12 +68,13 @@ public class ZeppelinConfigurable implements SearchableConfigurable {
       final String newUsername = getUsername();
       final String newPassword = String.valueOf(passwordField.getPassword());
       final String newHostUrl = hostTextField.getText();
-
+      final String newProxyUrl = proxyField.getText();
 
       if (!oldUsername.equals(newUsername) || !oldPassword.equals(newPassword) || !oldHost.equals(newHostUrl)) {
         connection.setUsername(newUsername);
         connection.setPassword(newPassword);
         connection.setHostUrl(newHostUrl);
+        connection.setProxyUrl(newProxyUrl);
         connection.resetApi();
       }
     }
