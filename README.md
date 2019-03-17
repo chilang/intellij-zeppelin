@@ -5,7 +5,9 @@ Intellij Zeppelin
 
 ![Demo](demo.gif)
 
-Features (v0.2):
+## Features 
+
+### 0.2
 
 ![IntelliJ Tools Zeppelin Menu](intellij_tools_zeppelin.png)
 
